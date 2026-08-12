@@ -1,0 +1,3 @@
+arquivo .mmd
+O que é flowchart LR?
+alt + p, >MermaidChart: Preview

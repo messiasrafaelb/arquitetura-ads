@@ -1,0 +1,12 @@
+flowchart LR
+    subgraph SA["API"]
+        Catalog["Catálogo<br> - <i>listar e buscar livros"]
+        Loan["Empréstimo<br> - <i>empresta e devolve livros"]
+        Notification["Notificação<br> - <i>monitora e notifica prazo"]
+    end
+
+    Email["Disparador de e-mails"]
+
+    Loan         -->  |consulta| Catalog
+    Loan         -->  |aciona| Notification
+    Notification ---> |chama| Email
