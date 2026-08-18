@@ -7,6 +7,6 @@ flowchart LR
 
     Email["Disparador de e-mails"]
 
-    Loan         -->  |consulta| Catalog
-    Loan         -->  |aciona| Notification
-    Notification ---> |chama| Email
+    Loan          -->  |consulta| Catalog
+    Loan          -->  |aciona| Notification
+    Notification --->  |chama| Email

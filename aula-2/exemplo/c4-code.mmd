@@ -1,1 +1,25 @@
-flowchart LR
+classDiagram
+    class Loan {
+        - id
+        - book
+        - user
+        - dueDate
+        - returnDate
+        - loanDate
+        + loan(book, user, dueDate, returnDate, loanDate)
+        + renew(newDueDate)
+        + return()
+        + isOverDue()
+    }
+
+    class Notification {
+        <<interface>>
+        + notify(loan)
+    }
+
+    class EmailNotifier {
+        + notify(load)
+    }
+
+    Loan           --> Notification  : usa
+    EmailNotifier ..|> Notification  : implementa

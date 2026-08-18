@@ -11,9 +11,9 @@ flowchart LR
 
     Email["Serviço de e-mail"]
 
-    User       -->  |pesquisa e empresta| App
-    Librarian  -->  |gerencia livro| Backoffice
-    App        -->  |chama API| Server
-    Backoffice -->  |chama API| Server
-    Server     -->  |lê e grava| DB
-    Server     ---> |monitora e notifica| Email
+    User        -->  |pesquisa e empresta| App
+    Librarian   -->  |gerencia livro| Backoffice
+    App         -->  |chama API| Server
+    Backoffice  -->  |chama API| Server
+    Server      -->  |lê e grava| DB
+    Server     --->  |monitora e notifica| Email
