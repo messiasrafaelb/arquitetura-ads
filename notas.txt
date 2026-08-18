@@ -1,3 +1,280 @@
 arquivo .mmd
 O que é flowchart LR?
 alt + p, >MermaidChart: Preview
+
+-- Explicando o modelo C4
+Claro. O modelo C4 é uma forma simples de descrever a arquitetura de um sistema de software usando diagramas.
+
+O nome vem de 4 níveis de detalhe:
+
+1. Context — Contexto
+
+Mostra o sistema por fora.
+
+Pergunta principal: “Quem usa o sistema e com quais outros sistemas ele se relaciona?”
+
+Exemplo:
+
+Usuário → Sistema de Vendas
+Sistema de Vendas → Sistema de Pagamento
+Sistema de Vendas → Serviço de E-mail
+
+É a visão mais geral.
+
+2. Container — Contêineres
+
+Agora entramos dentro do sistema.
+
+Pergunta: “Quais são as principais partes que formam o sistema?”
+
+Por exemplo:
+
+Sistema de Vendas
+├── Site Web
+├── API
+├── Banco de Dados
+└── Serviço de Pagamentos
+
+
+Aqui, “container” não significa necessariamente Docker. Pode ser uma aplicação, banco de dados, serviço etc.
+
+3. Component — Componentes
+
+Entramos dentro de um desses containers.
+
+Pergunta: “Quais são os principais componentes responsáveis pelas funções dessa aplicação?”
+
+Por exemplo, dentro da API:
+
+API
+├── Controller de Pedidos
+├── Serviço de Pedidos
+├── Serviço de Pagamento
+└── Repositório de Pedidos
+
+
+Mostra como aquela parte do sistema está organizada internamente.
+
+4. Code — Código
+
+É o nível mais detalhado.
+
+Pergunta: “Como cada componente é implementado no código?”
+
+Aqui podemos mostrar:
+
+classes
+interfaces
+métodos
+relacionamentos entre classes
+
+Por exemplo:
+
+PedidoService
+├── criarPedido()
+├── cancelarPedido()
+└── calcularTotal()
+
+Resumindo
+
+Imagine que você está olhando para uma casa:
+
+C4	Pergunta	Analogia
+Context	O que existe ao redor?	A casa e a vizinhança
+Container	Quais são as grandes partes?	Quartos, cozinha, garagem
+Component	O que existe dentro de cada parte?	Móveis e equipamentos
+Code	Como cada coisa é construída?	Peças e materiais
+
+A grande ideia do C4 é começar com uma visão ampla e ir aumentando o zoom conforme necessário.
+
+E uma coisa importante: você não precisa necessariamente criar os 4 níveis para todo sistema. Muitas vezes, os diagramas de Contexto + Containers já explicam muito bem a arquitetura.
+
+-- Exemplo com java
+Claro. Vamos imaginar um sistema de loja online em Java e aplicar os 4 níveis do C4.
+
+1. Contexto — “Quem conversa com quem?”
+
+Imagine:
+
+                 ┌──────────────┐
+                 │   Cliente    │
+                 └──────┬───────┘
+                        │
+                        ▼
+              ┌───────────────────┐
+              │  Loja Online      │
+              └───────┬───────────┘
+                      │
+          ┌───────────┼───────────┐
+          ▼           ▼           ▼
+    ┌──────────┐ ┌──────────┐ ┌─────────┐
+    │ Pagamento│ │  E-mail  │ │ Banco   │
+    └──────────┘ └──────────┘ └─────────┘
+
+
+Aqui não estamos preocupados com classes Java.
+
+Só queremos entender:
+
+“O sistema existe e conversa com quais pessoas e sistemas externos?”
+
+2. Containers — “Quais são as grandes partes?”
+
+Agora entramos na Loja Online:
+
+              Loja Online
+                   │
+       ┌───────────┼───────────┐
+       ▼           ▼           ▼
+   ┌───────┐   ┌───────┐   ┌─────────┐
+   │ Front │   │  API  │   │ Banco   │
+   │  Web  │   │ Java  │   │  SQL    │
+   └───────┘   └───┬───┘   └─────────┘
+                   │
+                   ▼
+             Serviço de
+              Pagamento
+
+
+Nesse caso, podemos dizer:
+
+Front Web → interface para o cliente
+API Java → regras de negócio
+Banco SQL → armazenamento
+Serviço de Pagamento → sistema externo
+
+O C4 chama essas grandes partes de containers.
+
+E perceba: container não significa necessariamente um Docker Container.
+
+3. Componentes — “O que existe dentro da API Java?”
+
+Agora fazemos zoom na nossa API:
+
+                    API Java
+                       │
+       ┌───────────────┼───────────────┐
+       ▼               ▼               ▼
+┌─────────────┐ ┌──────────────┐ ┌─────────────┐
+│ PedidoController│ │ PedidoService│ │ PedidoRepository│
+└─────────────┘ └──────────────┘ └─────────────┘
+                       │
+                       ▼
+                PagamentoService
+
+
+Agora começamos a chegar no mundo do Java.
+
+Por exemplo, poderíamos ter:
+
+@RestController
+public class PedidoController {
+
+    private final PedidoService pedidoService;
+
+    public PedidoController(PedidoService pedidoService) {
+        this.pedidoService = pedidoService;
+    }
+
+    @PostMapping("/pedidos")
+    public Pedido criar(@RequestBody Pedido pedido) {
+        return pedidoService.criar(pedido);
+    }
+}
+
+
+E:
+
+@Service
+public class PedidoService {
+
+    private final PedidoRepository repository;
+    private final PagamentoService pagamentoService;
+
+    public PedidoService(
+            PedidoRepository repository,
+            PagamentoService pagamentoService) {
+        this.repository = repository;
+        this.pagamentoService = pagamentoService;
+    }
+
+    public Pedido criar(Pedido pedido) {
+        pagamentoService.pagar(pedido);
+        return repository.salvar(pedido);
+    }
+}
+
+
+Essas classes representam componentes da nossa API.
+
+4. Código — “Como o componente é implementado?”
+
+Agora fazemos mais um zoom.
+
+Por exemplo, no PedidoService:
+
+public class PedidoService {
+
+    public Pedido criar(Pedido pedido) {
+
+        validar(pedido);
+
+        pagamentoService.pagar(pedido);
+
+        return repository.salvar(pedido);
+    }
+
+    private void validar(Pedido pedido) {
+        if (pedido.getItens().isEmpty()) {
+            throw new IllegalArgumentException(
+                "Pedido sem itens"
+            );
+        }
+    }
+}
+
+
+Nesse nível podemos mostrar detalhes como:
+
+classes
+interfaces
+métodos
+atributos
+relacionamentos
+implementação
+
+Ou seja, estamos olhando diretamente para o código.
+
+A ideia principal
+
+Pense que você está dando zoom:
+
+C4
+
+[ Contexto ]
+     ↓
+   Sistema inteiro
+     ↓
+[ Containers ]
+     ↓
+    API Java
+     ↓
+[ Components ]
+     ↓
+  PedidoService
+     ↓
+[ Code ]
+     ↓
+ classe + métodos
+
+
+Então, se alguém perguntar:
+
+“Onde está o Java no C4?”
+
+A resposta é: principalmente nos níveis de Component e Code, mas o C4 não depende de Java. Você poderia usar exatamente o mesmo modelo para Java, C#, Python, Go, etc.
+
+O objetivo do C4 é explicar a arquitetura, não documentar cada detalhe do código.
+
+-- Artigos cloudflare
+https://www.cloudflare.com/learning/
