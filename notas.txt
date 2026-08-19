@@ -278,3 +278,548 @@ O objetivo do C4 é explicar a arquitetura, não documentar cada detalhe do cód
 
 -- Artigos cloudflare
 https://www.cloudflare.com/learning/
+
+-- Atividade 3 - notas para ler
+Perfeito. Como a atividade pede um arquivo .md, abaixo já deixo o conteúdo pronto para você salvar como, por exemplo, analise-arquiteturas-p2p-pubsub.md. Procurei usar referências fortes, especialmente RFC/IETF, AWS, IEEE e material acadêmico, e no final coloquei uma seção de estudos recomendados.
+
+Análise dos Estilos Arquiteturais Ponto a Ponto (P2P) e Publicador/Assinante (Pub/Sub)
+1. Introdução
+
+Os estilos arquiteturais de software definem formas de organizar os componentes de um sistema e estabelecer como esses componentes se comunicam. Entre os diversos estilos existentes estão o monolito, cliente-servidor, distribuído, ponto a ponto, publicador/assinante e pipes e filtros.
+
+Neste trabalho serão analisados dois desses estilos: Ponto a Ponto (Peer-to-Peer ou P2P) e Publicador/Assinante (Publish/Subscribe ou Pub/Sub).
+
+Embora sejam utilizados para solucionar problemas diferentes, ambos são importantes em sistemas distribuídos. O P2P busca distribuir recursos e responsabilidades entre os próprios participantes da rede, enquanto o Pub/Sub busca principalmente desacoplar produtores e consumidores de informações por meio de mensagens e eventos.
+
+2. Arquitetura Ponto a Ponto (P2P)
+2.1 Conceito e definição
+
+A arquitetura Ponto a Ponto (Peer-to-Peer ou P2P) é um estilo arquitetural no qual os participantes da rede, chamados de peers, possuem funções semelhantes e podem atuar tanto como consumidores quanto como fornecedores de recursos.
+
+Diferentemente de uma arquitetura tradicional cliente-servidor, em que existe uma separação clara entre quem solicita e quem fornece um serviço, em uma arquitetura P2P os próprios participantes podem compartilhar processamento, armazenamento ou informações entre si.
+
+De acordo com a RFC 5694, sistemas P2P são um tipo de sistema distribuído no qual os peers compartilham recursos de processamento e armazenamento para fornecer determinado serviço. Um peer pode, por exemplo, solicitar um arquivo a outro peer e, ao mesmo tempo, disponibilizar arquivos para outros participantes da rede.
+
+Uma representação simplificada seria:
+
+       ┌─────────┐
+       │  Peer A │
+       └────┬────┘
+        ↙   │   ↘
+       ↙    │    ↘
+┌─────────┐ │ ┌─────────┐
+│  Peer B │◄┼►│  Peer C │
+└────┬────┘ │ └────┬────┘
+     ↘      │      ↙
+       ↘    │    ↙
+       ┌────▼────┐
+       │  Peer D │
+       └─────────┘
+
+
+Nesse modelo, os computadores não dependem necessariamente de um servidor central para realizar todas as operações.
+
+Entretanto, é importante observar que nem todo sistema P2P é totalmente descentralizado. Existem sistemas híbridos nos quais determinados serviços, como descoberta de peers, autenticação ou coordenação, podem utilizar componentes centralizados.
+
+2.2 Como funciona na prática?
+
+Imagine um sistema de compartilhamento de arquivos.
+
+Em um modelo cliente-servidor, poderíamos ter:
+
+Cliente ──────► Servidor
+                 │
+                 ▼
+             Arquivo
+
+
+Todos os clientes dependeriam do servidor para obter os arquivos.
+
+Em um sistema P2P, diferentes participantes podem possuir partes dos arquivos:
+
+              ┌─────────┐
+              │  Peer A │
+              │ Parte 1 │
+              └────┬────┘
+                   │
+                   ▼
+┌─────────┐    ┌─────────┐    ┌─────────┐
+│  Peer B │◄──►│  Peer C │◄──►│  Peer D │
+│ Parte 2 │    │ Parte 3 │    │ Parte 4 │
+└─────────┘    └─────────┘    └─────────┘
+
+
+Um participante pode descobrir quais outros peers possuem os dados desejados e obtê-los diretamente deles.
+
+Em sistemas reais, mecanismos de descoberta, indexação e organização da rede são necessários para encontrar os peers e os recursos disponíveis. Redes P2P podem utilizar diferentes estratégias de organização, incluindo redes estruturadas e não estruturadas.
+
+2.3 Casos de uso comuns
+2.3.1 BitTorrent
+
+Um dos exemplos mais conhecidos de P2P é o BitTorrent.
+
+Nesse modelo, um arquivo pode ser dividido em diversas partes e distribuído entre vários participantes. Um usuário que deseja baixar o arquivo pode receber diferentes partes de diferentes peers simultaneamente.
+
+Além de consumir recursos da rede, o próprio usuário também pode disponibilizar as partes que possui para outros participantes.
+
+Isso permite distribuir a carga entre vários computadores em vez de depender exclusivamente de um único servidor.
+
+A RFC 5694 utiliza o BitTorrent como exemplo de aplicação P2P e também apresenta outras categorias de aplicações P2P, como distribuição de conteúdo e computação distribuída.
+
+2.3.2 Sistemas de computação distribuída
+
+Outro uso possível é a computação distribuída baseada em P2P.
+
+Uma tarefa grande pode ser dividida em subtarefas independentes e distribuída para diferentes peers. Cada participante processa uma parte do trabalho e posteriormente os resultados podem ser combinados.
+
+Esse conceito pode ser utilizado, por exemplo, em projetos que precisam executar grande quantidade de processamento e podem dividir o trabalho entre vários computadores.
+
+2.3.3 Comunicação e colaboração
+
+Sistemas P2P também podem ser utilizados em aplicações de comunicação e colaboração, nas quais os participantes precisam trocar informações diretamente.
+
+Um exemplo histórico é o compartilhamento de arquivos entre usuários. Outro exemplo de categoria é a comunicação entre dispositivos que precisam colaborar sem depender de um servidor central para cada interação.
+
+2.4 Principais vantagens
+Descentralização
+
+Uma das principais vantagens é a redução da dependência de um servidor central.
+
+Se a arquitetura for suficientemente descentralizada, a indisponibilidade de um único nó não necessariamente interrompe todo o sistema.
+
+Distribuição da carga
+
+Os recursos podem ser distribuídos entre diversos participantes.
+
+Em um sistema de compartilhamento de arquivos, por exemplo, vários peers podem fornecer simultaneamente partes de um arquivo.
+
+Isso evita que todo o tráfego fique concentrado em um único servidor.
+
+Escalabilidade potencial
+
+A entrada de novos participantes pode também representar a entrada de novos recursos.
+
+Por exemplo, um novo peer pode fornecer capacidade de armazenamento, processamento ou largura de banda.
+
+Por isso, sistemas P2P podem apresentar características de crescimento diferentes de sistemas centralizados.
+
+Redução da dependência de infraestrutura central
+
+Dependendo do projeto, não é necessário manter uma infraestrutura central extremamente poderosa para atender todos os usuários.
+
+Parte dos recursos pode ser fornecida pelos próprios participantes.
+
+Resiliência
+
+A existência de múltiplos peers pode aumentar a tolerância a falhas.
+
+Se um determinado peer ficar indisponível, outros peers podem eventualmente fornecer o mesmo recurso.
+
+A RFC 5694 destaca justamente que existe um equilíbrio entre propriedades como escalabilidade, robustez e desempenho. O resultado depende de como o sistema P2P é projetado.
+
+2.5 Principais desvantagens
+Maior complexidade
+
+Projetar um sistema P2P normalmente é mais complexo do que projetar uma aplicação centralizada.
+
+É necessário lidar com descoberta de peers, entrada e saída de participantes, falhas de comunicação, sincronização e organização da rede.
+
+Segurança
+
+Como os participantes podem fornecer recursos diretamente uns aos outros, surge uma superfície de ataque maior.
+
+Peers podem ser maliciosos, estar comprometidos ou fornecer informações incorretas.
+
+Por isso, autenticação, integridade, criptografia e mecanismos de confiança podem ser necessários.
+
+Consistência
+
+Manter informações consistentes entre diversos participantes pode ser difícil.
+
+Quanto maior o nível de descentralização, maior pode ser a dificuldade para garantir que diferentes nós possuam informações atualizadas e coerentes.
+
+Participantes instáveis
+
+Peers podem entrar e sair da rede a qualquer momento.
+
+Essa característica, conhecida como churn, dificulta o gerenciamento da rede.
+
+Um recurso que estava disponível em determinado peer pode deixar de estar disponível repentinamente.
+
+Dificuldade de monitoramento e manutenção
+
+Em um sistema centralizado, é relativamente simples monitorar os servidores.
+
+Em uma rede P2P, os componentes estão distribuídos entre diferentes máquinas e, em alguns casos, essas máquinas pertencem aos próprios usuários.
+
+Isso torna observabilidade, diagnóstico e manutenção mais difíceis.
+
+3. Arquitetura Publicador/Assinante (Publish/Subscribe)
+3.1 Conceito e definição
+
+A arquitetura Publicador/Assinante (Publish/Subscribe ou Pub/Sub) é um modelo de comunicação no qual quem produz uma informação não precisa conhecer diretamente quem irá consumi-la.
+
+Existe normalmente um intermediário, chamado de broker, que recebe as mensagens dos publicadores e encaminha essas mensagens aos assinantes interessados.
+
+O funcionamento básico pode ser representado assim:
+
+                   ┌──────────────┐
+                   │   Publicador │
+                   └──────┬───────┘
+                          │
+                          ▼
+                   ┌──────────────┐
+                   │    Broker    │
+                   │    Tópico    │
+                   └──────┬───────┘
+                     ┌────┼────┐
+                     ▼    ▼    ▼
+                  ┌────┐ ┌────┐ ┌────┐
+                  │ A  │ │ B  │ │ C  │
+                  └────┘ └────┘ └────┘
+                 Assinantes
+
+
+O publicador envia uma mensagem para um tópico, e os assinantes interessados naquele tópico recebem a mensagem.
+
+A AWS descreve Pub/Sub como um modelo de comunicação assíncrona que desacopla o remetente das mensagens dos seus destinatários. O publicador não precisa saber quem são os assinantes, enquanto os assinantes não precisam necessariamente conhecer a origem da mensagem.
+
+3.2 Como funciona na prática?
+
+Imagine uma loja virtual.
+
+Quando um cliente realiza uma compra, o sistema pode gerar o evento:
+
+PedidoCriado
+
+
+Em vez de o serviço de pedidos chamar diretamente todos os outros serviços:
+
+Pedido
+  │
+  ├──► Estoque
+  ├──► E-mail
+  ├──► Nota Fiscal
+  └──► Analytics
+
+
+podemos utilizar Pub/Sub:
+
+             Pedido Service
+                   │
+                   │ publica
+                   ▼
+          ┌─────────────────┐
+          │ Broker / Tópico  │
+          │   PedidoCriado   │
+          └────────┬────────┘
+                   │
+        ┌──────────┼──────────┐
+        ▼          ▼          ▼
+     Estoque     E-mail    Analytics
+
+
+O serviço responsável pelo pedido não precisa conhecer todos os consumidores.
+
+Se posteriormente for necessário adicionar um serviço de análise antifraude, basta fazer esse serviço assinar o evento correspondente.
+
+Esse desacoplamento é uma das principais características do Pub/Sub.
+
+3.3 Casos de uso comuns
+3.3.1 Sistemas de comércio eletrônico
+
+Uma loja virtual pode utilizar eventos para comunicar diferentes partes do sistema.
+
+Por exemplo:
+
+PedidoCriado
+     │
+     ├──► Atualizar estoque
+     ├──► Enviar e-mail
+     ├──► Gerar nota fiscal
+     ├──► Registrar analytics
+     └──► Iniciar processo de entrega
+
+
+Todos esses consumidores podem reagir ao mesmo evento de forma independente.
+
+Esse modelo é especialmente útil quando existem vários serviços interessados na mesma informação.
+
+3.3.2 Internet das Coisas (IoT)
+
+Pub/Sub também é bastante utilizado em cenários de IoT.
+
+Imagine milhares de sensores enviando informações:
+
+Sensor 1 ─┐
+Sensor 2 ─┤
+Sensor 3 ─┼──► Broker ───► Sistemas interessados
+Sensor 4 ─┤
+Sensor 5 ─┘
+
+
+Um sistema pode receber os dados para monitoramento, outro para armazenamento histórico e outro para detectar anomalias.
+
+A AWS cita IoT como um dos casos de uso do modelo Pub/Sub.
+
+3.3.3 Arquiteturas orientadas a eventos
+
+Pub/Sub é muito comum em sistemas que utilizam arquitetura orientada a eventos (Event-Driven Architecture).
+
+Um serviço publica eventos quando alguma mudança importante acontece, e outros serviços reagem a esses eventos.
+
+Exemplos:
+
+UsuarioCadastrado
+PagamentoAprovado
+PedidoCriado
+ProdutoAtualizado
+EntregaEnviada
+
+
+Essa abordagem é comum em sistemas distribuídos e arquiteturas baseadas em microsserviços.
+
+3.4 Tecnologias utilizadas
+
+Existem diversas tecnologias que podem implementar ou oferecer mecanismos de Pub/Sub.
+
+Alguns exemplos são:
+
+Apache Kafka
+RabbitMQ
+Amazon SNS
+Google Cloud Pub/Sub
+Azure Service Bus
+
+O Apache Kafka, por exemplo, é utilizado para construção de pipelines de dados em tempo real e aplicações que trabalham com fluxos de eventos. Ele combina características de mensageria, armazenamento e processamento de streams.
+
+3.5 Principais vantagens
+Baixo acoplamento
+
+O publicador não precisa conhecer diretamente os consumidores.
+
+Isso facilita a evolução do sistema.
+
+Podemos adicionar um novo assinante sem necessariamente alterar o código do publicador.
+
+Escalabilidade
+
+Os consumidores podem ser escalados de forma independente.
+
+Se o processamento de determinados eventos aumentar, podemos aumentar a capacidade do serviço responsável por esses eventos.
+
+Comunicação assíncrona
+
+O publicador pode produzir o evento sem precisar esperar que todos os consumidores terminem seu processamento.
+
+Isso pode melhorar a capacidade de resposta do sistema.
+
+Fan-out
+
+Uma mesma mensagem pode ser distribuída para diversos consumidores.
+
+Por exemplo:
+
+                 PedidoCriado
+                      │
+                      ▼
+                   Broker
+                /     |      \
+               /      |       \
+              ▼       ▼        ▼
+          Estoque   E-mail   Analytics
+
+
+Cada consumidor pode utilizar o evento para uma finalidade diferente.
+
+Facilidade para adicionar funcionalidades
+
+Suponha que uma aplicação já publique:
+
+PagamentoAprovado
+
+
+Posteriormente, podemos criar um novo serviço de auditoria que simplesmente assine esse evento.
+
+O serviço de pagamento não precisa necessariamente ser modificado.
+
+Esse é um dos benefícios mais importantes do desacoplamento proporcionado pelo Pub/Sub.
+
+3.6 Principais desvantagens
+Complexidade operacional
+
+Adicionar um broker cria novos componentes de infraestrutura.
+
+Agora é necessário monitorar, configurar e manter o sistema de mensagens.
+
+Problemas no broker podem afetar diversos serviços.
+
+Dificuldade de depuração
+
+Em uma chamada direta:
+
+A → B
+
+
+é relativamente simples acompanhar o fluxo.
+
+Em Pub/Sub:
+
+A → Broker → B
+             → C
+             → D
+
+
+o caminho de uma mensagem pode envolver diversos componentes.
+
+Isso torna logs, rastreamento distribuído e observabilidade muito importantes.
+
+Consistência eventual
+
+Como o processamento pode ser assíncrono, diferentes serviços podem atualizar seus dados em momentos diferentes.
+
+Por exemplo:
+
+Pedido criado
+      ↓
+Estoque atualizado
+      ↓
+E-mail enviado
+      ↓
+Analytics atualizado
+
+
+Durante um intervalo de tempo, os serviços podem possuir estados diferentes.
+
+Mensagens duplicadas
+
+Dependendo da tecnologia e das garantias de entrega utilizadas, uma mensagem pode ser processada mais de uma vez.
+
+Por isso, os consumidores frequentemente precisam ser projetados de forma idempotente, ou seja, processar repetidamente uma mesma mensagem sem causar efeitos incorretos.
+
+Ordenação
+
+Garantir a ordem correta dos eventos pode ser difícil dependendo da infraestrutura utilizada.
+
+Por exemplo, considere:
+
+ProdutoCriado
+ProdutoAtualizado
+ProdutoRemovido
+
+
+Se os eventos forem processados fora de ordem, o estado final poderá ficar incorreto.
+
+Gerenciamento de mensagens
+
+É necessário definir questões como:
+
+quanto tempo uma mensagem deve ser armazenada;
+o que fazer quando um consumidor falha;
+como tratar mensagens que não podem ser processadas;
+como realizar reprocessamento;
+como controlar o crescimento do volume de eventos.
+
+Esses problemas aumentam a complexidade do sistema.
+
+4. Comparação entre P2P e Pub/Sub
+
+Apesar de ambos poderem aparecer em sistemas distribuídos, P2P e Pub/Sub resolvem problemas diferentes.
+
+Característica	P2P	Pub/Sub
+Principal objetivo	Distribuir recursos entre peers	Desacoplar produtores e consumidores
+Comunicação	Frequentemente peer-to-peer	Normalmente através de broker
+Centralização	Pode ser altamente descentralizado	Normalmente possui infraestrutura de mensagens
+Participantes	Peers	Publishers e subscribers
+Exemplo	BitTorrent	Apache Kafka
+Principal benefício	Distribuição de recursos	Baixo acoplamento
+Principal desafio	Gerenciar uma rede descentralizada	Gerenciar comunicação assíncrona
+Escalabilidade	Pode crescer adicionando peers	Pode escalar publishers e subscribers
+Comunicação assíncrona	Pode existir	É uma característica comum
+Uso comum	Compartilhamento/distribuição	Eventos e integração entre serviços
+5. Conclusão
+
+A arquitetura Ponto a Ponto (P2P) é adequada principalmente para situações em que os próprios participantes podem fornecer recursos e colaborar entre si. Seu principal diferencial é a descentralização, permitindo distribuir processamento, armazenamento ou conteúdo entre diversos nós.
+
+Por outro lado, a arquitetura Publicador/Assinante (Pub/Sub) é especialmente útil quando diferentes partes de um sistema precisam reagir a eventos sem criar dependências diretas entre elas. Seu principal benefício é o desacoplamento entre produtores e consumidores, característica importante em sistemas distribuídos e arquiteturas orientadas a eventos.
+
+Os dois estilos possuem vantagens significativas, mas também introduzem desafios. P2P exige mecanismos para lidar com descoberta, segurança, falhas e participantes instáveis. Pub/Sub exige atenção a questões como entrega de mensagens, duplicidade, ordenação, consistência eventual e observabilidade.
+
+Portanto, a escolha do estilo arquitetural deve considerar as características específicas do problema. Não existe uma arquitetura universalmente melhor: cada estilo apresenta diferentes compromissos entre escalabilidade, desempenho, complexidade, disponibilidade, consistência e facilidade de manutenção.
+
+6. Referências para estudo
+6.1 Peer-to-Peer
+RFC 5694 — Peer-to-Peer Architecture: Definition, Taxonomies, Examples, and Applicability
+
+Uma das melhores referências para estudar P2P de maneira mais formal. É uma publicação do IETF e aborda definição, características, exemplos, taxonomias, aplicações e trade-offs arquiteturais.
+
+Recomendação: MUITO ALTA
+
+RFC 5694 — Peer-to-Peer Architecture
+
+Material acadêmico da James Madison University — System Architectures
+
+Material didático que explica arquiteturas cliente-servidor e P2P de maneira mais introdutória, incluindo a ideia de que os nós podem atuar simultaneamente como clientes e servidores.
+
+Recomendação: ALTA para começar
+
+Computer Systems Fundamentals — System Architectures
+
+University of Edinburgh — Distributed Systems
+
+Material de curso universitário sobre sistemas distribuídos. É particularmente útil para entender onde P2P se encaixa dentro do conceito maior de sistemas distribuídos.
+
+Recomendação: MUITO ALTA
+
+University of Edinburgh — Distributed Systems
+
+6.2 Publish/Subscribe
+AWS — Padrão publicar/assinar
+
+Uma excelente referência prática para entender Pub/Sub. Explica intenção, funcionamento, implementação, vantagens, limitações e conceitos como broker, tópicos, assinantes e mensagens.
+
+Recomendação: MUITO ALTA
+
+AWS — Padrão publicar/assinar
+
+AWS — O que é Pub/Sub Messaging?
+
+Uma explicação mais introdutória e prática, apresentando conceitos como tópicos, publishers, subscribers, fan-out, filtragem e comunicação assíncrona.
+
+Recomendação: MUITO ALTA para começar
+
+AWS — O que é o sistema de pub/sub de mensagens?
+
+IEEE — Publish Subscribe Systems
+
+Boa referência para uma visão mais acadêmica do modelo Pub/Sub, incluindo conceitos de desacoplamento, canais, tópicos e brokers.
+
+Recomendação: MUITO ALTA
+
+IEEE Technology Navigator — Publish Subscribe Systems
+
+Apache Kafka
+
+Depois de entender o conceito de Pub/Sub, estudar Kafka é uma ótima forma de observar como esse tipo de arquitetura aparece em sistemas reais de grande escala.
+
+Recomendação: MUITO ALTA para prática
+
+Apache Kafka — documentação oficial
+
+7. Ordem recomendada para estudar
+
+Para realmente aprender o assunto, e não apenas concluir a atividade, recomendo esta sequência:
+
+Comece pelo material da JMU para entender P2P de maneira visual e introdutória.
+Leia a RFC 5694 para aprofundar P2P e entender os trade-offs.
+Leia a explicação da AWS sobre Pub/Sub para compreender os conceitos básicos.
+Leia o guia arquitetural da AWS sobre Pub/Sub para entender como o padrão é aplicado profissionalmente.
+Estude Kafka para perceber como mensageria e streaming aparecem em sistemas reais.
+Depois, estude arquitetura orientada a eventos (Event-Driven Architecture), pois ela conecta diretamente os conceitos de Pub/Sub com sistemas modernos distribuídos.
+
+O ponto mais importante para levar dessa atividade é:
+
+P2P distribui a responsabilidade entre os próprios participantes; Pub/Sub distribui a comunicação entre produtores e consumidores.
+
+Essa diferença ajuda bastante a não confundir os dois estilos.
+:::
