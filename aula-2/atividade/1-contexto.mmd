@@ -1,0 +1,11 @@
+﻿flowchart LR
+    Client(["Cliente<br> - <i>Busca e compra medicamentos</i>"])
+    Pharmacist(["Farmacêutico<br> - <i>Valida receitas e gerencia produtos</i>"])
+    System["Sistema da Farmácia Web"]
+    Payment["Gateway de Pagamento"]
+    Supplier["Sistema de Fornecedores"]
+
+    Client --> |pesquisa e compra| System
+    Pharmacist --> |gerencia catálogo e receitas| System
+    System --> |processa transação| Payment
+    System --> |pede reposição| Supplier

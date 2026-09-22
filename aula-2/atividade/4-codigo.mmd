@@ -1,0 +1,23 @@
+﻿classDiagram
+    class Pedido {
+        - id
+        - cliente
+        - itens
+        - receitaMedica
+        - valorTotal
+        + criarPedido(cliente, itens, receitaMedica)
+        + possuiReceitaValida()
+        + calcularTotal()
+    }
+
+    class Pagamento {
+        <<interface>>
+        + processar(pedido)
+    }
+
+    class GatewayPagamento {
+        + processar(pedido)
+    }
+
+    Pedido --> Pagamento : usa
+    GatewayPagamento ..|> Pagamento : implementa

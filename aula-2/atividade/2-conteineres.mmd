@@ -1,0 +1,17 @@
+﻿flowchart LR
+    Client(["Cliente"])
+    Pharmacist(["Farmacêutico"])
+
+    subgraph LR["Sistema da Farmácia Web"]
+        App["App Web (SPA)"]
+        Server["API da Farmácia"]
+        DB[("Banco de Dados")]
+    end
+
+    Payment["Gateway de Pagamento"]
+
+    Client --> |pesquisa e compra| App
+    Pharmacist --> |gerencia sistema| App
+    App --> |chama API| Server
+    Server --> |lê e grava| DB
+    Server ---> |processa cobrança| Payment

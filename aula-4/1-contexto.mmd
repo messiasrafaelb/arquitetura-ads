@@ -1,0 +1,10 @@
+﻿flowchart LR
+    Vendedor(["Vendedor<br> - <i>Registra pedidos</i>"])
+    Admin(["Administrador<br> - <i>Gerencia o catálogo de produtos</i>"])
+    Estoque(["Equipe de Estoque<br> - <i>Controla a entrada e saída</i>"])
+
+    System["Sistema de Vendas e Controle"]
+
+    Vendedor --> |registra pedidos| System
+    Admin --> |cadastra/remove produtos| System
+    Estoque --> |registra entradas/saídas| System

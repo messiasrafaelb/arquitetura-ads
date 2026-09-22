@@ -1,0 +1,16 @@
+﻿flowchart LR
+    Vendedor(["Vendedor"])
+    Admin(["Administrador"])
+    Estoque(["Equipe de Estoque"])
+
+    subgraph LR["Sistema de Vendas e Controle"]
+        App["SPA<br><i>[Apresentação]</i>"]
+        Server["API Principal<br><i>[Domínio]</i>"]
+        DB[("Banco de Dados<br><i>[Dados]</i>")]
+    end
+
+    Vendedor --> |interage| App
+    Admin --> |interage| App
+    Estoque --> |interage| App
+    App --> |delega regras de negócio| Server
+    Server --> |persiste informações| DB

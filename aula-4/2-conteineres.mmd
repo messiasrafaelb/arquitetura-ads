@@ -1,0 +1,16 @@
+﻿flowchart LR
+    Vendedor(["Vendedor"])
+    Admin(["Administrador"])
+    Estoque(["Equipe de Estoque"])
+
+    subgraph LR["Sistema de Vendas e Controle"]
+        App["SPA (React)"]
+        Server["API (Spring Boot)"]
+        DB[("Banco de Dados")]
+    end
+
+    Vendedor --> |acessa| App
+    Admin --> |acessa| App
+    Estoque --> |acessa| App
+    App --> |chama API| Server
+    Server --> |lê e grava| DB

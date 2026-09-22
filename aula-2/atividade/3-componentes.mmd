@@ -1,0 +1,12 @@
+﻿flowchart LR
+    subgraph SA["API da Farmácia"]
+        Catalog["Catálogo<br> - <i>busca medicamentos</i>"]
+        Order["Pedido<br> - <i>cria e finaliza compras</i>"]
+        Checkout["Checkout<br> - <i>valida receita e cobrança</i>"]
+    end
+
+    Payment["Gateway de Pagamento"]
+
+    Order --> |valida itens| Catalog
+    Order --> |aciona| Checkout
+    Checkout ---> |chama API| Payment
