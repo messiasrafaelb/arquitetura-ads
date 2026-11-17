@@ -37,19 +37,28 @@ public class Fatura {
         this.valor = valor;
         this.pedidoId = pedidoId;
         this.hashEmail = hashEmail;
-        this.emitidoEm = emitidoEm;
+        this.emitidoEm = emitidoEm != null ? emitidoEm : LocalDateTime.now();
         this.codigoBarras = codigoBarras;
     }
 
     public static Fatura criar(Long pedidoId, BigDecimal valor) {
-        return Fatura.builder().id(UUID.randomUUID()).pedidoId(pedidoId).valor(valor).build();
+        return Fatura.builder()
+                .id(UUID.randomUUID())
+                .pedidoId(pedidoId)
+                .valor(valor)
+                .emitidoEm(LocalDateTime.now())
+                .build();
     }
 
     public void inserirBoleto(String codigoBarras) {
-        /*
-         * TODO — Regra de negócio do boleto
-         */
-
         this.codigoBarras = codigoBarras;
+    }
+
+    public void inserirNotaFiscal(String chaveAcesso) {
+        this.rps = chaveAcesso;
+    }
+
+    public void inserirEmail(String hashEmail) {
+        this.hashEmail = hashEmail;
     }
 }

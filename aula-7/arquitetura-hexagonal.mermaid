@@ -1,0 +1,53 @@
+flowchart LR
+    subgraph Fora["Lado de Fora (Infraestrutura)"]
+        REST["Adaptador REST<br><i>(FaturaController)</i>"]
+        JPA["Adaptador JPA<br><i>(FaturaRepositoryImp)</i>"]
+        FilaBoleto["Adaptador Fila<br><i>(BoletoMessagingImp)</i>"]
+        SOAP["Adaptador SOAP<br><i>(NotaFiscalSoapImp)</i>"]
+        SMTP["Adaptador SMTP<br><i>(EmailMessagingImp)</i>"]
+    end
+
+    subgraph Hexagono["Hub de Faturamento (Arquitetura Hexagonal)"]
+        subgraph PortasEntrada["Portas de Entrada"]
+            PortaFaturaIn["FaturaService"]
+        end
+
+        subgraph Aplicacao["Aplicação"]
+            AppService["FaturaServiceImpl"]
+        end
+
+        subgraph Dominio["Domínio"]
+            EntidadeFatura["Entidade Fatura"]
+            PortaRepoOut["FaturaRepository"]
+            PortaBoletoOut["BoletoMessaging"]
+            PortaNotaOut["NotaFiscalSoap"]
+            PortaEmailOut["EmailMessaging"]
+        end
+    end
+
+    subgraph Externos["Sistemas Externos"]
+        VendaApp["Aplicação de Vendas"]
+        BancoH2[("Banco de Dados H2")]
+        EmissorBoleto["Fila de Boletos"]
+        Sefaz["Web Service NF-e (SOAP)"]
+        MailServer["Servidor de E-mail (SMTP)"]
+    end
+
+    VendaApp -->|POST /fatura| REST
+    REST -->|chama| PortaFaturaIn
+    PortaFaturaIn -.->|implementada por| AppService
+    AppService -->|cria e valida| EntidadeFatura
+    AppService -->|usa| PortaRepoOut
+    AppService -->|usa| PortaBoletoOut
+    AppService -->|usa| PortaNotaOut
+    AppService -->|usa| PortaEmailOut
+
+    JPA -.->|implementa| PortaRepoOut
+    FilaBoleto -.->|implementa| PortaBoletoOut
+    SOAP -.->|implementa| PortaNotaOut
+    SMTP -.->|implementa| PortaEmailOut
+
+    JPA -->|grava fatura| BancoH2
+    FilaBoleto -->|publica boleto| EmissorBoleto
+    SOAP -->|emite NF-e| Sefaz
+    SMTP -->|envia e-mail| MailServer
