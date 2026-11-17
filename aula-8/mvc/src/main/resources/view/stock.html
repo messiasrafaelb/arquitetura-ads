@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <title>Estoque</title>
+</head>
+<body>
+    <header>
+        <h1>Controle de Estoque</h1>
+    </header>
+    <main>
+        <nav>
+            <p><a th:href="@{/}">Voltar para Home</a> | <a th:href="@{/products}">Ir para Produtos</a></p>
+        </nav>
+        <section>
+            <h2>Entrada de Estoque</h2>
+            <form th:action="@{/stock/entry}" method="post">
+                <div>
+                    <label for="entryProduct">Produto:</label>
+                    <select name="productId" id="entryProduct" required>
+                        <option value="">Selecione...</option>
+                        <option th:each="product : ${products}"
+                                th:if="${product.status != null and product.status.name() != 'DISCONTINUED'}"
+                                th:value="${product.id}"
+                                th:text="${product.name + ' (Atual: ' + product.quantity + ')'}">
+                        </option>
+                    </select>
+                </div>
+                <div>
+                    <label for="entryQuantity">Quantidade:</label>
+                    <input type="number" min="1" name="quantity" id="entryQuantity" required>
+                </div>
+                <button type="submit" style="background-color: #28a745; color: white;">Dar Entrada</button>
+            </form>
+        </section>
+        <section>
+            <h2>Saída de Estoque</h2>
+            <form th:action="@{/stock/exit}" method="post">
+                <div>
+                    <label for="exitProduct">Produto:</label>
+                    <select name="productId" id="exitProduct" required>
+                        <option value="">Selecione...</option>
+                        <option th:each="product : ${products}"
+                                th:if="${product.status != null and product.status.name() != 'DISCONTINUED'}"
+                                th:value="${product.id}"
+                                th:text="${product.name + ' (Atual: ' + product.quantity + ')'}">
+                        </option>
+                    </select>
+                </div>
+                <div>
+                    <label for="exitQuantity">Quantidade:</label>
+                    <input type="number" min="1" name="quantity" id="exitQuantity" required>
+                </div>
+                <button type="submit" style="background-color: #dc3545; color: white;">Dar Saída</button>
+            </form>
+        </section>
+        <section>
+            <h2>Situação do Estoque</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>NOME</th>
+                        <th>ESTOQUE</th>
+                        <th>STATUS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="product : ${products}">
+                        <td th:text="${product.id}"></td>
+                        <td th:text="${product.name}"></td>
+                        <td th:text="${product.quantity}"></td>
+                        <td th:text="${product.status != null ? product.status.description : ''}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+    <footer>
+        <p>Projeto de compreensão do MVC</p>
+    </footer>
+</body>
+</html>

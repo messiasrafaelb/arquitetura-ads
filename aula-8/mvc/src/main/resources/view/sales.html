@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <title>Vendas</title>
+</head>
+<body>
+    <header>
+        <h1>Módulo de Vendas</h1>
+    </header>
+    <main>
+        <nav>
+            <p><a th:href="@{/}">Voltar para Home</a> | <a th:href="@{/products}">Produtos</a> | <a th:href="@{/stock}">Estoque</a></p>
+        </nav>
+        <section>
+            <h2>Fechar Novo Pedido</h2>
+            <form th:action="@{/sales}" th:object="${sale}" method="post">
+                <div>
+                    <label for="clientName">Nome do Cliente:</label>
+                    <input type="text" name="clientName" id="clientName" th:field="*{clientName}" required>
+                </div>
+                <div>
+                    <label for="amount">Valor do Pedido (R$):</label>
+                    <input type="number" step="0.01" min="0.01" name="amount" id="amount" th:field="*{amount}" required>
+                </div>
+                <button type="submit" style="background-color: #0b2545; color: white;">Fechar Pedido</button>
+            </form>
+        </section>
+        <section>
+            <h2>Pedidos Realizados:</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>CLIENTE</th>
+                        <th>VALOR</th>
+                        <th>STATUS</th>
+                        <th>ID DA FATURA (HUB)</th>
+                        <th>DATA</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="s : ${sales}">
+                        <td th:text="${s.id}"></td>
+                        <td th:text="${s.clientName}"></td>
+                        <td th:text="${'R$ ' + s.amount}"></td>
+                        <td th:text="${s.status}"></td>
+                        <td th:text="${s.faturaId != null ? s.faturaId : 'Aguardando'}"></td>
+                        <td th:text="${#temporals.format(s.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+    <footer>
+        <p>Projeto de compreensão do MVC integrado ao Hub Hexagonal</p>
+    </footer>
+</body>
+</html>
