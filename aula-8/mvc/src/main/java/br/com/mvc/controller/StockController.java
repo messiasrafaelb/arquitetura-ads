@@ -20,18 +20,21 @@ public class StockController {
     @GetMapping
     public String index(Model model) {
         model.addAttribute("products", productService.read());
+
         return "stock";
     }
 
     @PostMapping("/entry")
     public String entry(@RequestParam Long productId, @RequestParam Integer quantity) {
         productService.entryStock(productId, quantity);
+
         return "redirect:/stock";
     }
 
     @PostMapping("/exit")
     public String exit(@RequestParam Long productId, @RequestParam Integer quantity) {
         productService.exitStock(productId, quantity);
+
         return "redirect:/stock";
     }
 }

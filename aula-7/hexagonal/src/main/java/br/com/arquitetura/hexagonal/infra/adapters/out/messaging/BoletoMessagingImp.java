@@ -13,6 +13,7 @@ public class BoletoMessagingImp implements BoletoMessaging {
         long valorCentavos = fatura.getValor() != null
                 ? fatura.getValor().movePointRight(2).longValue()
                 : 1000L;
+
         return String.format("34191.79001 01043.510047 91020.150008 1 %010d", valorCentavos);
     }
 }

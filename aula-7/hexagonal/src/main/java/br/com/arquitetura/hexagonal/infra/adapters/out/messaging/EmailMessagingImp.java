@@ -16,16 +16,23 @@ public class EmailMessagingImp implements EmailMessaging {
     public String enviarEmail(Fatura fatura) {
         try {
             String conteudo = "Fatura:" + fatura.getId() + ";Pedido:" + fatura.getPedidoId() + ";Valor:" + fatura.getValor();
+
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
+
             byte[] encodedhash = digest.digest(conteudo.getBytes(StandardCharsets.UTF_8));
+
             StringBuilder hexString = new StringBuilder();
+
             for (byte b : encodedhash) {
                 String hex = Integer.toHexString(0xff & b);
+
                 if (hex.length() == 1) {
                     hexString.append('0');
                 }
+
                 hexString.append(hex);
             }
+
             return hexString.toString();
         } catch (NoSuchAlgorithmException e) {
             return "HASH-" + System.currentTimeMillis();

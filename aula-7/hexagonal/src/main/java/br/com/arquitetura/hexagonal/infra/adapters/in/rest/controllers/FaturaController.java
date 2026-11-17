@@ -26,6 +26,7 @@ public class FaturaController {
     @PostMapping
     public ResponseEntity<FaturaPostResponse> post(@RequestBody FaturaPostRequest request) {
         UUID faturaId = faturaService.faturarPedido(request.pedidoId(), request.valor());
+
         return ResponseEntity.status(201).body(new FaturaPostResponse(faturaId.toString()));
     }
 

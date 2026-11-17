@@ -21,13 +21,16 @@ public class SaleController {
     @GetMapping
     public String read(Model model) {
         model.addAttribute("sales", saleService.read());
+
         model.addAttribute("sale", new Sale());
+
         return "sales";
     }
 
     @PostMapping
     public String create(@ModelAttribute Sale sale) {
         saleService.create(sale);
+
         return "redirect:/sales";
     }
 }

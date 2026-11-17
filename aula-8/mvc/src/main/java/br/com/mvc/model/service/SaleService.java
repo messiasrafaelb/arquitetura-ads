@@ -28,16 +28,21 @@ public class SaleService {
 
     public Sale create(Sale sale) {
         sale.setCreatedAt(LocalDateTime.now());
+
         sale.setStatus("PROCESSANDO");
+
         Sale saved = repository.save(sale);
 
         try {
             RestTemplate restTemplate = new RestTemplate();
+
             FaturaHubRequest request = new FaturaHubRequest(saved.getId(), saved.getAmount());
+
             FaturaHubResponse response = restTemplate.postForObject(hubFaturamentoUrl, request, FaturaHubResponse.class);
 
             if (response != null && response.faturaId() != null) {
                 saved.setFaturaId(response.faturaId());
+
                 saved.setStatus("FATURADO");
             } else {
                 saved.setStatus("FATURAMENTO_PENDENTE");

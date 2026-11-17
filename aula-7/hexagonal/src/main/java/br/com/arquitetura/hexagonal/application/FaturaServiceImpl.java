@@ -19,8 +19,11 @@ import lombok.RequiredArgsConstructor;
 public class FaturaServiceImpl implements FaturaService {
 
     private final FaturaRepository repository;
+
     private final BoletoMessaging boletoMessaging;
+
     private final NotaFiscalSoap notaFiscalSoap;
+
     private final EmailMessaging emailMessaging;
 
     @Override
@@ -28,12 +31,15 @@ public class FaturaServiceImpl implements FaturaService {
         var fatura = Fatura.criar(pedidoId, valor);
 
         var codigoBarras = boletoMessaging.emitirBoleto(fatura);
+
         fatura.inserirBoleto(codigoBarras);
 
         var chaveAcesso = notaFiscalSoap.emitirNotaFiscal(fatura);
+
         fatura.inserirNotaFiscal(chaveAcesso);
 
         var hashEmail = emailMessaging.enviarEmail(fatura);
+
         fatura.inserirEmail(hashEmail);
 
         repository.salvar(fatura);
