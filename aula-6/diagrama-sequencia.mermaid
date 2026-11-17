@@ -1,0 +1,32 @@
+sequenceDiagram
+    actor Usuário
+    participant StockController
+    participant ProductService
+    participant ProductRepository
+
+    Usuário->>StockController: POST /stock/entry (productId, quantity)
+    StockController->>ProductService: entryStock(productId, quantity)
+    ProductService->>ProductRepository: findById(productId)
+    ProductRepository-->>ProductService: Product
+    ProductService->>ProductService: valida se não descontinuado
+    ProductService->>ProductService: incrementa quantidade
+    ProductService->>ProductService: atualiza status para DISPONÍVEL
+    ProductService->>ProductRepository: save(product)
+    ProductRepository-->>ProductService: Product
+    ProductService-->>StockController: Product
+    StockController-->>Usuário: redirect /stock
+
+    Usuário->>StockController: POST /stock/exit (productId, quantity)
+    StockController->>ProductService: exitStock(productId, quantity)
+    ProductService->>ProductRepository: findById(productId)
+    ProductRepository-->>ProductService: Product
+    ProductService->>ProductService: valida se não descontinuado
+    ProductService->>ProductService: valida se quantidade em estoque suficiente
+    ProductService->>ProductService: decrementa quantidade
+    alt estoque == 0
+        ProductService->>ProductService: atualiza status para INDISPONÍVEL
+    end
+    ProductService->>ProductRepository: save(product)
+    ProductRepository-->>ProductService: Product
+    ProductService-->>StockController: Product
+    StockController-->>Usuário: redirect /stock

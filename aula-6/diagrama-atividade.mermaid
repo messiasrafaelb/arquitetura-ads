@@ -1,0 +1,17 @@
+flowchart TD
+    Inicio(( )) --> Recebe[Recebe requisição de saída de estoque]
+    Recebe --> Busca[Busca produto pelo ID]
+    Busca --> ValidaDesc{Produto descontinuado?}
+    ValidaDesc -- [sim] --> ErroDesc[Recusa operação: Produto descontinuado]
+    ErroDesc --> Fim(( ))
+    ValidaDesc -- [não] --> ValidaEstoque{Estoque suficiente?}
+    ValidaEstoque -- [não] --> ErroEstoque[Recusa operação: Estoque insuficiente]
+    ErroEstoque --> Fim
+    ValidaEstoque -- [sim] --> Subtrai[Subtrai quantidade do estoque]
+    Subtrai --> ValidaZero{Estoque zerou?}
+    ValidaZero -- [sim] --> StatusIndisp[Atualiza status para INDISPONÍVEL]
+    ValidaZero -- [não] --> StatusDisp[Mantém status DISPONÍVEL]
+    StatusIndisp --> Salva[Salva produto no banco]
+    StatusDisp --> Salva
+    Salva --> Redireciona[Redireciona para /stock]
+    Redireciona --> Fim

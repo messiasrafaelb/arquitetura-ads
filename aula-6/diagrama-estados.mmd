@@ -1,0 +1,8 @@
+stateDiagram-v2
+    [*] --> INDISPONIVEL : cadastrarProduto() [estoque == 0]
+    INDISPONIVEL --> DISPONIVEL : entryStock() [estoque > 0]
+    DISPONIVEL --> INDISPONIVEL : exitStock() [estoque == 0]
+    DISPONIVEL --> DISPONIVEL : entryStock() / exitStock() [estoque > 0]
+    DISPONIVEL --> DESCONTINUADO : descontinuar() [Administrador]
+    INDISPONIVEL --> DESCONTINUADO : descontinuar() [Administrador]
+    DESCONTINUADO --> [*]

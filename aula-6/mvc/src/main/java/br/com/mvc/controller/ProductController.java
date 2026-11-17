@@ -10,6 +10,7 @@ import br.com.mvc.model.entity.Product;
 import br.com.mvc.model.service.ProductService;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
@@ -29,6 +30,12 @@ public class ProductController {
     @PostMapping()
     public String create(@ModelAttribute Product product) {
         service.create(product);
+        return "redirect:/products";
+    }
+
+    @PostMapping("/{id}/discontinue")
+    public String discontinue(@PathVariable Long id) {
+        service.discontinue(id);
         return "redirect:/products";
     }
 

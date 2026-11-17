@@ -36,4 +36,7 @@ public class Product {
     @Column(name = "STATUS")
     @Enumerated(EnumType.STRING)
     private EProductStatus status;
+
+    @Column(name = "QUANTITY")
+    private Integer quantity;
 }
